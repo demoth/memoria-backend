@@ -9,6 +9,10 @@ class Initializer(val userRepository: UserRepository): CommandLineRunner {
         userRepository.save(User("demoth", "whatever"))
         println("Saved to database!")
         
+        println("Users in database:")
         userRepository.findAll().forEach { println("Found user: $it") }
+        
+        println("Demoths:")
+        userRepository.findByName("demoth").forEach { println(it) }
     }
 }
