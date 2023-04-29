@@ -1,0 +1,1 @@
+docker run -d -p 27017:27017 --name memoria-mongo -v mongo-data:/data/db mongo:latest
