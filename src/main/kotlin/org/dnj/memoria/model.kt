@@ -4,9 +4,8 @@ import org.springframework.data.annotation.Id
 import java.util.Date
 
 data class User(
-    val name: String, 
-    var password: String, 
-    val creationDate: Date = Date(),
+    val name: String,
+    var password: String,
     @field:Id val id: String? = null
 )
 
@@ -20,9 +19,9 @@ data class Item(
     var assignee: User? = null,
 
     var description: String? = null,
-    val created: Date = Date(),
     var updated: Date = Date(),
     var dueDate: Date? = null,
+    val created: Date = Date(),
     @field:Id val id: String? = null
 )
 
@@ -38,3 +37,17 @@ enum class Status {
     InProgress,
     Done
 }
+
+data class LoginRequest(
+    val username: String,
+    val password: String
+)
+
+data class LoginResponse(
+    val username: String,
+    val jwt: String
+)
+
+data class ErrorResponse(
+    val message: String
+)

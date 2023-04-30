@@ -21,12 +21,12 @@ class Initializer(
         userRepository.findByName("demoth").forEach { println(it) }
         
         println("Items:")
-        itemRepository.save(Item("Task", "Позвонить в страховую", Status.Backlog, Priority.high, demoth))
-        itemRepository.save(Item("Task", "Пополнить баланс", Status.Backlog, Priority.medium, demoth))
+        itemRepository.save(Item("Task", "Позвонить в страховую", Status.Backlog, Priority.high, demoth, demoth, "Не знаю ещё зачем"))
+        itemRepository.save(Item("Task", "Пополнить баланс", Status.Todo, Priority.medium, demoth))
         itemRepository.save(Item("Task", "Помыть кухню", Status.Backlog, Priority.medium, denolia))
-        itemRepository.save(Item("Task", "Поиграть в пое", Status.Backlog, Priority.high, denolia))
-        itemRepository.save(Item("Epic", "Написать свой ноушен", Status.Backlog, Priority.high, demoth))
-        itemRepository.save(Item("Task", "Сходить в магазин", Status.Backlog, Priority.low, demoth))
+        itemRepository.save(Item("Task", "Поиграть в PoE", Status.Backlog, Priority.high, denolia))
+        itemRepository.save(Item("Epic", "Написать свой ноушен", Status.InProgress, Priority.high, demoth, denolia))
+        itemRepository.save(Item("Task", "Сходить в магазин", Status.Done, Priority.low, demoth))
         itemRepository.findAll().forEach { println(it) }
     }
 }

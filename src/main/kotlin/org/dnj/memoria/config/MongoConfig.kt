@@ -1,4 +1,4 @@
-package org.dnj.memoria
+package org.dnj.memoria.config
 
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration
 
 @Configuration
 class MongoConfig : AbstractMongoClientConfiguration() {
-    private val DB_NAME = "test"
+    private val DB_NAME = "memoria-db"
 
     override fun getDatabaseName(): String {
         return DB_NAME

@@ -1,6 +1,8 @@
-package org.dnj.memoria
+package org.dnj.memoria.controllers
 
 import jakarta.websocket.server.PathParam
+import org.dnj.memoria.Item
+import org.dnj.memoria.ItemRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
