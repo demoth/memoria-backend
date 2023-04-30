@@ -16,7 +16,7 @@ import java.util.*
 class AuthService(@Autowired private val userRepository: UserRepository) {
     private val CLAIM_NAME = "loggedInAs"
 
-    private val ISSUER = "booktracker"
+    private val ISSUER = "memoria"
 
     private val JWT_SECRET = System.getenv("JWT_SECRET") ?: UUID.randomUUID().toString()
 
@@ -32,10 +32,10 @@ class AuthService(@Autowired private val userRepository: UserRepository) {
         val userName: String = try {
             VERIFIER.verify(token).getClaim(CLAIM_NAME).asString()
         } catch (e: Exception) {
-            throw MemoriaException("Invalid token", HttpStatus.UNAUTHORIZED)
+            throw MemoriaException("Wrong login or password", HttpStatus.UNAUTHORIZED)
         }
         return userRepository.findById(userName).orElseGet {
-            throw MemoriaException("No such user", HttpStatus.NOT_FOUND)
+            throw MemoriaException("Wrong login or password", HttpStatus.UNAUTHORIZED)
         }
     }
 
@@ -44,11 +44,11 @@ class AuthService(@Autowired private val userRepository: UserRepository) {
      */
     fun loginUser(name: String, password: String): LoginResponse {
         val user = userRepository.findById(name).orElseThrow {
-            throw MemoriaException("No such user", HttpStatus.NOT_FOUND)
+            MemoriaException("Wrong login or password", HttpStatus.UNAUTHORIZED)
         }
 
         if (user.password != password) {
-            throw MemoriaException("Wrong password", HttpStatus.UNAUTHORIZED)
+            throw MemoriaException("Wrong login or password", HttpStatus.UNAUTHORIZED)
         }
 
         try {

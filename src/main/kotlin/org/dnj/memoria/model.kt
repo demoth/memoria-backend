@@ -1,6 +1,7 @@
 package org.dnj.memoria
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.DBRef
 import java.util.Date
 
 data class User(
@@ -15,7 +16,9 @@ data class Item(
     var status: Status,
     var priority: Priority,
 
+    @DBRef
     val creator: User,
+    @DBRef
     var assignee: User? = null,
 
     var description: String? = null,
