@@ -32,11 +32,13 @@ class AuthService(@Autowired private val userRepository: UserRepository) {
         val userName: String = try {
             VERIFIER.verify(token).getClaim(CLAIM_NAME).asString()
         } catch (e: Exception) {
-            throw MemoriaException("Wrong login or password", HttpStatus.UNAUTHORIZED)
+            throw MemoriaException("Wrong login or password", HttpStatus.FORBIDDEN)
         }
-        return userRepository.findById(userName).orElseGet {
-            throw MemoriaException("Wrong login or password", HttpStatus.UNAUTHORIZED)
-        }
+
+        return userRepository.findByName(userName).firstOrNull()
+        // jwt is correct, but there is no such user
+            ?: throw MemoriaException("Wrong login or password", HttpStatus.FORBIDDEN)
+
     }
 
     /**
@@ -44,10 +46,10 @@ class AuthService(@Autowired private val userRepository: UserRepository) {
      */
     fun loginUser(name: String, password: String): LoginResponse {
         val user = userRepository.findByName(name).firstOrNull() 
-            ?: throw MemoriaException("Wrong login or password", HttpStatus.UNAUTHORIZED)
+            ?: throw MemoriaException("Wrong login or password", HttpStatus.FORBIDDEN)
 
         if (user.password != password) {
-            throw MemoriaException("Wrong login or password", HttpStatus.UNAUTHORIZED)
+            throw MemoriaException("Wrong login or password", HttpStatus.FORBIDDEN)
         }
 
         try {
