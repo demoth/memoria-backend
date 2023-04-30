@@ -3,6 +3,7 @@ package org.dnj.memoria.controllers
 import org.dnj.memoria.Item
 import org.dnj.memoria.ItemRepository
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/item")
+@CrossOrigin
 class ItemController(
     val itemRepository: ItemRepository
 ) {

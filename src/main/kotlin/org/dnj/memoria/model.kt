@@ -1,15 +1,20 @@
 package org.dnj.memoria
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.DBRef
+import org.springframework.data.mongodb.core.mapping.Document
 import java.util.Date
 
+@Document
 data class User(
+    @Indexed(unique = true) //fixme: doesn't work
     val name: String,
     var password: String,
     @field:Id val id: String? = null
 )
 
+@Document
 data class Item(
     var type: String,
     var title: String,

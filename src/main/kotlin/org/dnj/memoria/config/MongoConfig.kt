@@ -20,7 +20,8 @@ class MongoConfig : AbstractMongoClientConfiguration() {
         val mongoClientSettings = MongoClientSettings.builder()
             .applyConnectionString(connectionString)
             .build()
-        return MongoClients.create(mongoClientSettings)
+        val client = MongoClients.create(mongoClientSettings)
+        return client
     }
 
     public override fun getMappingBasePackages(): Collection<String> {

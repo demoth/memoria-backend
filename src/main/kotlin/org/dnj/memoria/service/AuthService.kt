@@ -43,9 +43,8 @@ class AuthService(@Autowired private val userRepository: UserRepository) {
      * @return token after successful identification and authentication
      */
     fun loginUser(name: String, password: String): LoginResponse {
-        val user = userRepository.findById(name).orElseThrow {
-            MemoriaException("Wrong login or password", HttpStatus.UNAUTHORIZED)
-        }
+        val user = userRepository.findByName(name).firstOrNull() 
+            ?: throw MemoriaException("Wrong login or password", HttpStatus.UNAUTHORIZED)
 
         if (user.password != password) {
             throw MemoriaException("Wrong login or password", HttpStatus.UNAUTHORIZED)

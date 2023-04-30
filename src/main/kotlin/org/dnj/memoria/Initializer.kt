@@ -12,6 +12,7 @@ class Initializer(
         userRepository.deleteAll()
         itemRepository.deleteAll()
         val demoth = userRepository.save(User("demoth", "whatever"))
+        userRepository.save(User("demoth", "whatever"))
         val denolia = userRepository.save(User("denolia", "whatever"))
         
         println("Users in database:")

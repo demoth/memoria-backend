@@ -1,6 +1,5 @@
 package org.dnj.memoria
 
-import org.springframework.data.mongodb.repository.Query
 import org.springframework.data.repository.CrudRepository
 
 interface UserRepository : CrudRepository<User, String> {
