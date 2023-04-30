@@ -9,8 +9,10 @@ class Initializer(
     val itemRepository: ItemRepository
 ): CommandLineRunner {
     override fun run(vararg args: String?) {
-        val demoth = User("demoth", "whatever").also { userRepository.save(it) }
-        val denolia = User("denolia", "whatever").also { userRepository.save(it) }
+        userRepository.deleteAll()
+        itemRepository.deleteAll()
+        val demoth = userRepository.save(User("demoth", "whatever"))
+        val denolia = userRepository.save(User("denolia", "whatever"))
         
         println("Users in database:")
         userRepository.findAll().forEach { println("Found user: $it") }
@@ -19,12 +21,12 @@ class Initializer(
         userRepository.findByName("demoth").forEach { println(it) }
         
         println("Items:")
-        itemRepository.save(Item("Task", "Позвонить в страховую", Status.Backlog, Priority.medium, demoth))
+        itemRepository.save(Item("Task", "Позвонить в страховую", Status.Backlog, Priority.high, demoth))
         itemRepository.save(Item("Task", "Пополнить баланс", Status.Backlog, Priority.medium, demoth))
         itemRepository.save(Item("Task", "Помыть кухню", Status.Backlog, Priority.medium, denolia))
-        itemRepository.save(Item("Task", "Поиграть в пое", Status.Backlog, Priority.medium, denolia))
-        itemRepository.save(Item("Epic", "Написать свой ноушен", Status.Backlog, Priority.medium, demoth))
-        itemRepository.save(Item("Task", "Сходить в магазин", Status.Backlog, Priority.medium, demoth))
+        itemRepository.save(Item("Task", "Поиграть в пое", Status.Backlog, Priority.high, denolia))
+        itemRepository.save(Item("Epic", "Написать свой ноушен", Status.Backlog, Priority.high, demoth))
+        itemRepository.save(Item("Task", "Сходить в магазин", Status.Backlog, Priority.low, demoth))
         itemRepository.findAll().forEach { println(it) }
     }
 }
