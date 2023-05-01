@@ -4,12 +4,14 @@ import org.dnj.memoria.Item
 import org.dnj.memoria.ItemRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.Date
 
 @RestController
 @RequestMapping("/item")
@@ -28,8 +30,13 @@ class ItemController(
     }
     
     @PostMapping
-    fun updateItem(@RequestBody item: Item): ResponseEntity<String> {
-        itemRepository.save(item)
-        return ResponseEntity.ok("Ok")
+    fun updateItem(@RequestBody item: Item): ResponseEntity<Item> {
+        item.updated = Date()
+        return ResponseEntity.ok(itemRepository.save(item))
+    }
+    
+    @DeleteMapping("/{id}")
+    fun deleteItem(@PathVariable("id") id: String) {
+        itemRepository.deleteById(id)
     }
 }

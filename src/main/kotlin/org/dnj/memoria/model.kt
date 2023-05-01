@@ -25,8 +25,10 @@ data class Item(
     val creator: User,
     @DBRef
     var assignee: User? = null,
+    @DBRef
+    var parent: Item? = null,
 
-    var description: String? = null,
+    var description: String? = null, // html? md?
     var updated: Date = Date(),
     var dueDate: Date? = null,
     val created: Date = Date(),
