@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.Date
+import kotlin.jvm.optionals.getOrElse
 
 @RestController
 @RequestMapping("/item")
@@ -21,22 +22,42 @@ class ItemController(
 ) {
     @GetMapping("/all")
     fun allItems(): ResponseEntity<*> {
-        return ResponseEntity.ok(itemRepository.findAll())
+        val items = itemRepository.findAll()
+        items.forEach {
+            filterPasswords(it)
+            val parent = it.parent
+            if (parent != null)
+                filterPasswords(parent)
+        }
+        return ResponseEntity.ok(items)
     }
-    
+
+    private fun filterPasswords(it: Item) {
+        it.assignee?.password = ""
+        it.creator.password = ""
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
     @GetMapping("/{id}")
     fun getById(@PathVariable("id") id: String): ResponseEntity<Item> {
-        return ResponseEntity.ok(itemRepository.findById(id).get())
+        val item = itemRepository.findById(id).getOrElse { 
+            return ResponseEntity.notFound().build()
+        }
+        filterPasswords(item)
+        return ResponseEntity.ok(item)
     }
-    
+
     @PostMapping
     fun updateItem(@RequestBody item: Item): ResponseEntity<Item> {
+        println("item: ${item.id} updated")
         item.updated = Date()
         return ResponseEntity.ok(itemRepository.save(item))
     }
-    
+
     @DeleteMapping("/{id}")
-    fun deleteItem(@PathVariable("id") id: String) {
+    fun deleteItem(@PathVariable("id") id: String): ResponseEntity<String> {
+        println("item: $id deleted")
         itemRepository.deleteById(id)
+        return ResponseEntity.ok("OK")
     }
 }
