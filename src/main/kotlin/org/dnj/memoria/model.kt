@@ -10,7 +10,7 @@ import java.util.Date
 data class User(
     @Indexed(unique = true) //fixme: doesn't work
     val name: String,
-    var password: String,
+    var password: String, // todo: don't store password in plain text
     @field:Id val id: String? = null
 )
 
