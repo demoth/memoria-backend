@@ -12,6 +12,13 @@ data class User(
     val name: String,
     var password: String, // todo: don't store password in plain text
     @field:Id val id: String? = null
+) {
+    fun toDto() = UserDto(name, id ?: "N/A")
+}
+
+data class UserDto(
+    val name: String,
+    val id: String,
 )
 
 @Document
@@ -35,7 +42,31 @@ data class Item(
     @field:Id val id: String? = null
 ) {
     override fun toString() = "Item('$title' " + (if (id.isNullOrBlank()) "" else id) + ")"
+    
+    fun toDto(): ItemDto = ItemDto(type, title, status, priority, creator?.toDto(), assignee?.toDto(), parent?.toSmallDto(), description, updated, dueDate, created, id)
+    
+    private fun toSmallDto() = ItemSmallDto(title, id ?: "N/A")
 }
+
+data class ItemSmallDto(
+    val title: String,
+    val id: String
+)
+
+data class ItemDto(
+    val type: String?,
+    val title: String?,
+    val status: Status?,
+    val priority: Priority?,
+    val creator: UserDto?,
+    val assignee: UserDto?,
+    val parent: ItemSmallDto?,
+    val description: String?,
+    val updated: Date?,
+    val dueDate: Date?,
+    val created: Date?,
+    val id: String?
+)
 
 enum class Priority {
     Low,

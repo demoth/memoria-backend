@@ -7,6 +7,7 @@ import com.mongodb.client.MongoClients
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration
 
+
 @Configuration
 class MongoConfig : AbstractMongoClientConfiguration() {
     private val DB_NAME = "memoria-db"

@@ -1,6 +1,7 @@
 package org.dnj.memoria.controllers
 
 import org.dnj.memoria.Item
+import org.dnj.memoria.ItemDto
 import org.dnj.memoria.ItemRepository
 import org.dnj.memoria.service.AuthService
 import org.springframework.http.ResponseEntity
@@ -30,20 +31,7 @@ class ItemController(
         @RequestHeader("Authentication") token: String
     ): ResponseEntity<*> {
         authService.validateToken(token)
-        val items = itemRepository.findAll()
-        items.forEach {
-            filterPasswords(it)
-            val parent = it.parent
-            if (parent != null)
-                filterPasswords(parent)
-        }
-        return ResponseEntity.ok(items)
-    }
-
-    @Deprecated("use projections or converters")
-    private fun filterPasswords(it: Item) {
-        it.assignee?.password = ""
-        it.creator?.password = ""
+        return ResponseEntity.ok(itemRepository.findAll().map { it.toDto() })
     }
 
     @OptIn(ExperimentalStdlibApi::class)
@@ -51,20 +39,20 @@ class ItemController(
     fun getById(
         @PathVariable("id") id: String,
         @RequestHeader("Authentication") token: String
-    ): ResponseEntity<Item> {
+    ): ResponseEntity<ItemDto> {
         authService.validateToken(token)
         val item = itemRepository.findById(id).getOrElse {
             return ResponseEntity.notFound().build()
         }
-        filterPasswords(item)
-        return ResponseEntity.ok(item)
+        return ResponseEntity.ok(item.toDto())
     }
 
     @PostMapping
     fun updateItem(
         @RequestBody requestItem: Item,
         @RequestHeader("Authentication") token: String
-    ): ResponseEntity<Item> {
+    ): ResponseEntity<ItemDto> {
+        
         val user = authService.validateToken(token)
 
         if (!validateItem(requestItem))
@@ -79,8 +67,7 @@ class ItemController(
             println("item $requestItem updated")
         }
         val saved = itemRepository.save(requestItem)
-        filterPasswords(saved)
-        return ResponseEntity.ok(saved)
+        return ResponseEntity.ok(saved.toDto())
     }
 
     private fun validateItem(requestItem: Item): Boolean {
