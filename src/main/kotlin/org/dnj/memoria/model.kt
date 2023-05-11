@@ -21,24 +21,26 @@ data class Item(
     var status: Status,
     var priority: Priority,
 
-    @DBRef
-    val creator: User,
-    @DBRef
+    @field:DBRef
+    var creator: User? = null,
+    @field:DBRef
     var assignee: User? = null,
-    @DBRef
+    @field:DBRef
     var parent: Item? = null,
 
     var description: String? = null, // html? md?
     var updated: Date = Date(),
     var dueDate: Date? = null,
-    val created: Date = Date(),
+    var created: Date = Date(),
     @field:Id val id: String? = null
-)
+) {
+    override fun toString() = "Item('$title' " + (if (id.isNullOrBlank()) "" else id) + ")"
+}
 
 enum class Priority {
-    low,
-    medium,
-    high,
+    Low,
+    Medium,
+    High,
 }
 
 enum class Status {

@@ -43,7 +43,7 @@ class ItemController(
     @Deprecated("use projections or converters")
     private fun filterPasswords(it: Item) {
         it.assignee?.password = ""
-        it.creator.password = ""
+        it.creator?.password = ""
     }
 
     @OptIn(ExperimentalStdlibApi::class)
@@ -62,13 +62,31 @@ class ItemController(
 
     @PostMapping
     fun updateItem(
-        @RequestBody item: Item,
+        @RequestBody requestItem: Item,
         @RequestHeader("Authentication") token: String
     ): ResponseEntity<Item> {
-        authService.validateToken(token)
-        println("item: ${item.id} updated")
-        item.updated = Date()
-        return ResponseEntity.ok(itemRepository.save(item))
+        val user = authService.validateToken(token)
+
+        if (!validateItem(requestItem))
+            return ResponseEntity.badRequest().build()
+
+        requestItem.updated = Date()
+        if (requestItem.id == null) {
+            requestItem.creator = user
+            requestItem.created = Date()
+            println("new item $requestItem created")
+        } else {
+            println("item $requestItem updated")
+        }
+        val saved = itemRepository.save(requestItem)
+        filterPasswords(saved)
+        return ResponseEntity.ok(saved)
+    }
+
+    private fun validateItem(requestItem: Item): Boolean {
+        if (requestItem.title.isBlank()) 
+            return false
+        return true
     }
 
     @DeleteMapping("/{id}")
