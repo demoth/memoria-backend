@@ -22,8 +22,6 @@ services:
   
   memoria-mongodb:
     image: "mongo:latest"
-    ports:
-      - "27017:27017"
     networks:
       - memoria-network
     environment:
