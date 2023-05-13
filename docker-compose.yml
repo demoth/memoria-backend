@@ -15,7 +15,11 @@ services:
       - MONGODB_USER=${MONGO_USER}
       - PASSWORD_USER_DEMOTH=lala
       - PASSWORD_USER_DENOLIA=keke
-
+    deploy:
+      resources:
+        limits:
+          memory: "100M"
+  
   memoria-mongodb:
     image: "mongo:latest"
     ports:
