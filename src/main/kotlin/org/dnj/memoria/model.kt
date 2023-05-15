@@ -10,7 +10,7 @@ import java.util.Date
 data class User(
     @Indexed(unique = true) //fixme: doesn't work
     val name: String,
-    var password: String, // todo: don't store password in plain text
+    var password: String?, // todo: don't store password in plain text // todo2: make non nullable 
     @field:Id val id: String? = null
 ) {
     fun toDto() = UserDto(name, id ?: "N/A")
