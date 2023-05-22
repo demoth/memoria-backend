@@ -41,8 +41,11 @@ data class Item(
     var created: Date = Date(),
     @field:Id val id: String? = null
 ) {
-    override fun toString() = "Item('$title' " + (if (id.isNullOrBlank()) "" else id) + ")"
     
+    companion object {
+        fun empty(creator: User) = Item("", "", Status.Todo, Priority.Low).apply { this.creator = creator }
+    }
+        
     fun toDto(): ItemDto = ItemDto(type, title, status, priority, creator?.toDto(), assignee?.toDto(), parent?.toSmallDto(), description, updated, dueDate, created, id)
     
     private fun toSmallDto() = ItemSmallDto(title, id ?: "N/A")

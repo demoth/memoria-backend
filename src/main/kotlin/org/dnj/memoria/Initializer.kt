@@ -10,8 +10,7 @@ class Initializer(
     val itemRepository: ItemRepository
 ): CommandLineRunner {
     override fun run(vararg args: String?) {
-        getOrCreateUser("demoth")
-        getOrCreateUser("denolia")
+        println("Initialized!")
     }
 
     private fun getOrCreateUser(userName: String): User {
