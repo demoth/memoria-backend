@@ -48,13 +48,10 @@ data class Item(
         
     fun toDto(): ItemDto = ItemDto(type, title, status, priority, creator?.toDto(), assignee?.toDto(), parent?.toSmallDto(), description, updated, dueDate, created, id)
     
-    private fun toSmallDto() = ItemSmallDto(title, id ?: "N/A")
+    private fun toSmallDto() = ItemSmallDto(id ?: "N/A", title)
 }
 
-data class ItemSmallDto(
-    val title: String,
-    val id: String
-)
+data class ItemSmallDto(val id: String, val title: String?)
 
 data class ItemDto(
     val type: String?,

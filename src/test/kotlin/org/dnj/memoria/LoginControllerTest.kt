@@ -38,7 +38,7 @@ class LoginControllerTest {
 
     @Test
     fun login() {
-        val loginRequest = LoginRequest(TEST_USER.name, TEST_USER.password)
+        val loginRequest = LoginRequest(TEST_USER.name, TEST_USER.password!!)
         val response = rest.postForObject<LoginResponse>("/login", loginRequest, LoginRequest::class)
         authService.validateToken("Bearer ${response!!.jwt}")
     }
