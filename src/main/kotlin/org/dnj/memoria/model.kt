@@ -44,6 +44,9 @@ data class Item(
     
     companion object {
         fun empty(creator: User) = Item("", "", Status.Todo, Priority.Low).apply { this.creator = creator }
+
+        const val TYPE_EPIC = "Epic"
+        const val TYPE_TASK = "Task"
     }
         
     fun toDto(): ItemDto = ItemDto(type, title, status, priority, creator?.toDto(), assignee?.toDto(), parent?.toSmallDto(), description, updated, dueDate, created, id)

@@ -106,7 +106,13 @@ class ItemController(
             // todo: proper validation
             val parent = itemRepository.findById(requestItem.parent.id).getOrNull()
             if (parent != null) {
-                existingItem.parent = parent
+                if (parent.type != Item.TYPE_EPIC) {
+                    logger.warn("Parent can only be epic: $parent")
+                } else if (existingItem.type != Item.TYPE_TASK) {
+                    logger.warn("Only tasks can have a parent")
+                } else {
+                    existingItem.parent = parent
+                }
             } else {
                 logger.warn("Parent task ${requestItem.parent.id} does not exist")
             }

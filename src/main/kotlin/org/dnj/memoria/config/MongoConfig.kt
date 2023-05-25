@@ -6,7 +6,6 @@ import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration
-import java.lang.IllegalStateException
 
 
 @Configuration
@@ -18,16 +17,15 @@ class MongoConfig : AbstractMongoClientConfiguration() {
     }
 
     override fun mongoClient(): MongoClient {
-        val mongoUser = System.getenv("MONGODB_USER") ?: throw IllegalStateException("No mongodb username is given!")
-        val mongoPass = System.getenv("MONGODB_PASS") ?: throw IllegalStateException("No mongodb password is given!")
-        val mongoUrl = System.getenv("MONGODB_URL") ?: throw IllegalStateException("No mongodb url is given!")
+        val mongoUser = System.getenv("MONGODB_USER") ?: "admin"
+        val mongoPass = System.getenv("MONGODB_PASS") ?: "admin"
+        val mongoUrl = System.getenv("MONGODB_URL") ?: "localhost"
         // todo: assert non empty params
         val connectionString = ConnectionString("mongodb://$mongoUser:$mongoPass@$mongoUrl:27017")
         val mongoClientSettings = MongoClientSettings.builder()
             .applyConnectionString(connectionString)
             .build()
-        val client = MongoClients.create(mongoClientSettings)
-        return client
+        return MongoClients.create(mongoClientSettings)
     }
 
     public override fun getMappingBasePackages(): Collection<String> {
