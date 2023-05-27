@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 data class ChangePasswordRequest(
-    val id: String,
+    val username: String,
     val currentPassword: String,
     val newPassword: String
 )
@@ -29,7 +29,7 @@ class UserController(
         @RequestBody request: ChangePasswordRequest
     ): ResponseEntity<UserDto> {
         val user = authService.validateToken(token)
-        if (user.id != request.id ||
+        if (user.name != request.username ||
             user.password != request.currentPassword) {
             return ResponseEntity.badRequest().build()
         }
