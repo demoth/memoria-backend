@@ -90,6 +90,7 @@ data class LoginRequest(
 )
 
 data class LoginResponse(
+    val userId: String,
     val username: String,
     val jwt: String
 )

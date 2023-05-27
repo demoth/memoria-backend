@@ -53,7 +53,8 @@ class AuthService(@Autowired private val userRepository: UserRepository) {
         }
 
         try {
-            return LoginResponse(name,
+            return LoginResponse(user.id!!, // id is always present when fetched from db 
+                name,
                 JWT.create()
                     .withIssuer(ISSUER)
                     .withClaim(CLAIM_NAME, user.name)
