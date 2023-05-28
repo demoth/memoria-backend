@@ -8,3 +8,5 @@ interface UserRepository : CrudRepository<User, String> {
 
 interface ItemRepository : CrudRepository<Item, String> {
 }
+
+interface SpaceRepository: CrudRepository<Space, String>

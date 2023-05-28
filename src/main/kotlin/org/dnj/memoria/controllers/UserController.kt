@@ -37,5 +37,4 @@ class UserController(
         user.password = request.newPassword
         return ResponseEntity.ok(userRepository.save(user).toDto())
     }
-
 }

@@ -31,7 +31,7 @@ class LoginControllerTest {
     @Autowired
     lateinit var authService: AuthService
 
-    var TEST_USER = User("TestAuthUser", "123")
+    var TEST_USER = User("TestAuthUser", "123", )
 
     @BeforeEach
     fun setUp() {

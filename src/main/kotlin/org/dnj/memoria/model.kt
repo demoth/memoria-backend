@@ -7,11 +7,30 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.util.Date
 
 @Document
+data class Space(
+    val name: String,
+    val description: String? = null,
+    val created: Date = Date(),
+    @field:Id val id: String? = null,
+) {
+    fun toDto() = SpaceDto(id!!, name)
+}
+
+data class SpaceDto(
+    val id: String,
+    val name: String
+)
+
+
+@Document
 data class User(
     @Indexed(unique = true) //fixme: doesn't work
     val name: String,
     var password: String?, // todo: don't store password in plain text // todo2: make non nullable 
-    @field:Id val id: String? = null
+    @field:Id val id: String? = null,
+    
+    @field:DBRef
+    val spaces:MutableList<Space> = mutableListOf()
 ) {
     fun toDto() = UserDto(name, id ?: "N/A")
 }
@@ -39,8 +58,10 @@ data class Item(
     var updated: Date = Date(),
     var dueDate: Date? = null,
     var created: Date = Date(),
-    @field:Id val id: String? = null
-) {
+    @field:Id val id: String? = null,
+    @field:DBRef var space: Space? = null,
+
+    ) {
     
     companion object {
         fun empty(creator: User) = Item("", "", Status.Todo, Priority.Low).apply { this.creator = creator }
@@ -49,7 +70,7 @@ data class Item(
         const val TYPE_TASK = "Task"
     }
         
-    fun toDto(): ItemDto = ItemDto(type, title, status, priority, creator?.toDto(), assignee?.toDto(), parent?.toSmallDto(), description, updated, dueDate, created, id)
+    fun toDto(): ItemDto = ItemDto(type, title, status, priority, creator?.toDto(), assignee?.toDto(), parent?.toSmallDto(), description, updated, dueDate, created, id, space?.toDto())
     
     private fun toSmallDto() = ItemSmallDto(id ?: "N/A", title)
 }
@@ -68,7 +89,8 @@ data class ItemDto(
     val updated: Date?,
     val dueDate: Date?,
     val created: Date?,
-    val id: String?
+    val id: String?,
+    val space: SpaceDto?
 )
 
 enum class Priority {
