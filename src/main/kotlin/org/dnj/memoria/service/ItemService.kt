@@ -3,6 +3,7 @@ package org.dnj.memoria.service
 import org.dnj.memoria.Item
 import org.dnj.memoria.ItemDto
 import org.dnj.memoria.ItemRepository
+import org.dnj.memoria.SpaceRepository
 import org.dnj.memoria.User
 import org.dnj.memoria.UserRepository
 import org.dnj.memoria.ValidationException
@@ -15,15 +16,15 @@ import kotlin.jvm.optionals.getOrNull
 @Service
 class ItemService(
     @Autowired val itemRepository: ItemRepository,
-    @Autowired val userRepository: UserRepository
+    @Autowired val userRepository: UserRepository,
+    @Autowired val spaceRepository: SpaceRepository
 ) {
     companion object {
         private val logger = LoggerFactory.getLogger(ItemService::class.java)
     }
     
     fun getAllItems(user: User): List<ItemDto> {
-        // todo: fetch only relevant items
-        return itemRepository.findAll().map(Item::toDto).toList()
+        return user.spaces.flatMap { itemRepository.findBySpace(it) }.map { it.toDto() }
     }
     
     @OptIn(ExperimentalStdlibApi::class)
@@ -48,7 +49,7 @@ class ItemService(
         
         if (requestItem.id == null) {
             logger.info("Creating new item: $requestItem")
-            return updateItemFromDto(Item.empty(user), requestItem).toDto()
+            return updateItemFromDto(Item.empty(user), requestItem, user).toDto()
 
         } else {
             val existingItem = itemRepository.findById(requestItem.id).getOrNull()
@@ -56,13 +57,13 @@ class ItemService(
 
             logger.info("Updating item: $requestItem")
 
-            return updateItemFromDto(existingItem, requestItem).toDto()
+            return updateItemFromDto(existingItem, requestItem, user).toDto()
         }
 
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    private fun updateItemFromDto(existingItem: Item, requestItem: ItemDto): Item {
+    private fun updateItemFromDto(existingItem: Item, requestItem: ItemDto, creator: User): Item {
         existingItem.updated = Date()
 
         if (requestItem.title != null)
@@ -99,13 +100,21 @@ class ItemService(
         }
 
         if (requestItem.assignee != null) {
-            // todo: proper validation
             val assignee = userRepository.findById(requestItem.assignee.id).getOrNull()
             if (assignee != null ) {
                 existingItem.assignee = assignee
             } else {
                 throw ValidationException("User ${requestItem.assignee.id} does not exist")
             }
+        }
+        
+        if (requestItem.space != null) {
+            val space = spaceRepository.findById(requestItem.space.id).getOrNull() 
+                ?: throw ValidationException("No such space: ${requestItem.space}")
+            
+            if (!creator.spaces.contains(space))
+                throw ValidationException("User is not in the space: $space")
+            existingItem.space = space
         }
 
         return itemRepository.save(existingItem)
