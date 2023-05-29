@@ -1,10 +1,10 @@
 package org.dnj.memoria.service
 
-import org.dnj.memoria.Item
-import org.dnj.memoria.ItemDto
+import org.dnj.memoria.model.Item
+import org.dnj.memoria.model.ItemDto
 import org.dnj.memoria.ItemRepository
 import org.dnj.memoria.SpaceRepository
-import org.dnj.memoria.User
+import org.dnj.memoria.model.User
 import org.dnj.memoria.UserRepository
 import org.dnj.memoria.ValidationException
 import org.slf4j.LoggerFactory

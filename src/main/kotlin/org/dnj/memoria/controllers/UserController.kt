@@ -1,6 +1,6 @@
 package org.dnj.memoria.controllers
 
-import org.dnj.memoria.UserDto
+import org.dnj.memoria.model.UserDto
 import org.dnj.memoria.UserRepository
 import org.dnj.memoria.service.AuthService
 import org.springframework.http.ResponseEntity

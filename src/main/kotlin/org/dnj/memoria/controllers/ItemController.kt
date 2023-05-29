@@ -1,6 +1,6 @@
 package org.dnj.memoria.controllers
 
-import org.dnj.memoria.ItemDto
+import org.dnj.memoria.model.ItemDto
 import org.dnj.memoria.ValidationException
 import org.dnj.memoria.service.AuthService
 import org.dnj.memoria.service.ItemService
