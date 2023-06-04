@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "org.dnj"
-version = "1.4.3"
+version = "1.5.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
