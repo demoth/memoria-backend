@@ -118,7 +118,7 @@ class ItemService(
             }
         }
         
-        if (requestItem.space != null) {
+        if (requestItem.space?.id != null) {
             val space = spaceRepository.findById(requestItem.space.id).getOrNull() 
                 ?: throw ValidationException("No such space: ${requestItem.space}")
             

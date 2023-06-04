@@ -24,7 +24,7 @@ class UserController(
 ) {
     
     @PostMapping
-    fun update(
+    fun changePassword(
         @RequestHeader("Authentication") token: String,
         @RequestBody request: ChangePasswordRequest
     ): ResponseEntity<UserDto> {
