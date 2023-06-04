@@ -1,7 +1,7 @@
 package org.dnj.memoria.controllers
 
-import org.dnj.memoria.LoginRequest
-import org.dnj.memoria.LoginResponse
+import org.dnj.memoria.model.LoginRequest
+import org.dnj.memoria.model.LoginResponse
 import org.dnj.memoria.service.AuthService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.CrossOrigin

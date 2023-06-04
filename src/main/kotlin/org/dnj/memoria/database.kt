@@ -1,5 +1,8 @@
 package org.dnj.memoria
 
+import org.dnj.memoria.model.Item
+import org.dnj.memoria.model.Space
+import org.dnj.memoria.model.User
 import org.springframework.data.repository.CrudRepository
 
 interface UserRepository : CrudRepository<User, String> {
@@ -8,6 +11,8 @@ interface UserRepository : CrudRepository<User, String> {
 
 interface ItemRepository : CrudRepository<Item, String> {
     fun findBySpace(space: Space): Collection<Item>
+    
+    fun findBySpaceId(id: String): Collection<Item>
 }
 
 interface SpaceRepository: CrudRepository<Space, String>

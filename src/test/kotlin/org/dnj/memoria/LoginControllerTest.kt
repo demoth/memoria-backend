@@ -1,5 +1,9 @@
 package org.dnj.memoria
 
+import org.dnj.memoria.model.ErrorResponse
+import org.dnj.memoria.model.LoginRequest
+import org.dnj.memoria.model.LoginResponse
+import org.dnj.memoria.model.User
 import org.dnj.memoria.service.AuthService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach

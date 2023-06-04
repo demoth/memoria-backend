@@ -3,9 +3,9 @@ package org.dnj.memoria.service
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import org.dnj.memoria.LoginResponse
+import org.dnj.memoria.model.LoginResponse
 import org.dnj.memoria.MemoriaException
-import org.dnj.memoria.User
+import org.dnj.memoria.model.User
 import org.dnj.memoria.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -53,11 +53,13 @@ class AuthService(@Autowired private val userRepository: UserRepository) {
         }
 
         try {
-            return LoginResponse(name,
+            return LoginResponse(
+                name,
                 JWT.create()
                     .withIssuer(ISSUER)
                     .withClaim(CLAIM_NAME, user.name)
-                    .sign(Algorithm.HMAC256(JWT_SECRET)))
+                    .sign(Algorithm.HMAC256(JWT_SECRET)), 
+                user.spaces.map { it.toDto() })
         } catch (e: Exception) {
             throw MemoriaException("Could not authenticate", HttpStatus.INTERNAL_SERVER_ERROR)
         }

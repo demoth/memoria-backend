@@ -1,6 +1,6 @@
 package org.dnj.memoria.controllers
 
-import org.dnj.memoria.ItemDto
+import org.dnj.memoria.model.ItemDto
 import org.dnj.memoria.ValidationException
 import org.dnj.memoria.service.AuthService
 import org.dnj.memoria.service.ItemService
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -25,10 +26,11 @@ class ItemController(
 
     @GetMapping("/all")
     fun allItems(
-        @RequestHeader("Authentication") token: String
+        @RequestHeader("Authentication") token: String,
+        @RequestParam("space") spaceId: String,
     ): ResponseEntity<*> {
         val user = authService.validateToken(token)
-        return ResponseEntity.ok(itemService.getAllItems(user))
+        return ResponseEntity.ok(itemService.getBySpace(user, spaceId))
     }
 
     @GetMapping("/{id}")
@@ -44,7 +46,6 @@ class ItemController(
             ResponseEntity.ok(item)
         else
             ResponseEntity.notFound().build()
-        
     }
 
     @PostMapping

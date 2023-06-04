@@ -1,5 +1,6 @@
 package org.dnj.memoria
 
+import org.dnj.memoria.model.Space
 import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
@@ -12,7 +13,7 @@ class Initializer(
 ): CommandLineRunner {
     
     companion object {
-        val logger = LoggerFactory.getLogger(Initializer::class.java)
+        private val logger = LoggerFactory.getLogger(Initializer::class.java)!!
     }
     
     override fun run(vararg args: String?) {
@@ -31,8 +32,8 @@ class Initializer(
                 itemRepository.save(it)
             }
         }
-        
-        println("Initialized!")
+
+        logger.info("Initialized!")
     }
 
 //    private fun getOrCreateUser(userName: String): User {

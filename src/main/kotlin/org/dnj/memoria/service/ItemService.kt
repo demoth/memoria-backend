@@ -1,14 +1,16 @@
 package org.dnj.memoria.service
 
-import org.dnj.memoria.Item
-import org.dnj.memoria.ItemDto
+import org.dnj.memoria.model.Item
+import org.dnj.memoria.model.ItemDto
 import org.dnj.memoria.ItemRepository
+import org.dnj.memoria.MemoriaException
 import org.dnj.memoria.SpaceRepository
-import org.dnj.memoria.User
+import org.dnj.memoria.model.User
 import org.dnj.memoria.UserRepository
 import org.dnj.memoria.ValidationException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.util.Date
 import kotlin.jvm.optionals.getOrNull
@@ -23,12 +25,20 @@ class ItemService(
         private val logger = LoggerFactory.getLogger(ItemService::class.java)
     }
     
-    fun getAllItems(user: User): List<ItemDto> {
+    fun getBySpace(user: User, spaceId: String): List<ItemDto> {
+        if (user.spaces.none { it.id == spaceId}) {
+            throw MemoriaException("${user.name} had no access to space: $spaceId", HttpStatus.FORBIDDEN)
+        }
+        return itemRepository.findBySpaceId(spaceId).map { it.toDto() }
+    }
+
+    fun getAllByUserSpace(user: User): List<ItemDto> {
         return user.spaces.flatMap { itemRepository.findBySpace(it) }.map { it.toDto() }
     }
     
     @OptIn(ExperimentalStdlibApi::class)
     fun getItem(id: String): ItemDto? {
+        // todo: check access
         return itemRepository.findById(id).getOrNull()?.toDto()
     }
     
@@ -108,7 +118,7 @@ class ItemService(
             }
         }
         
-        if (requestItem.space != null) {
+        if (requestItem.space?.id != null) {
             val space = spaceRepository.findById(requestItem.space.id).getOrNull() 
                 ?: throw ValidationException("No such space: ${requestItem.space}")
             
