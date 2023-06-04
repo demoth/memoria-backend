@@ -13,7 +13,7 @@ class Initializer(
 ): CommandLineRunner {
     
     companion object {
-        private val logger = LoggerFactory.getLogger(Initializer::class.java)
+        private val logger = LoggerFactory.getLogger(Initializer::class.java)!!
     }
     
     override fun run(vararg args: String?) {
@@ -32,8 +32,8 @@ class Initializer(
                 itemRepository.save(it)
             }
         }
-        
-        println("Initialized!")
+
+        logger.info("Initialized!")
     }
 
 //    private fun getOrCreateUser(userName: String): User {

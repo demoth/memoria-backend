@@ -7,5 +7,6 @@ data class LoginRequest(
 
 data class LoginResponse(
     val username: String,
-    val jwt: String
+    val jwt: String,
+    val userspaces: Collection<SpaceDto>
 )
