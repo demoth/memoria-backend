@@ -11,6 +11,7 @@ import org.dnj.memoria.service.AuthService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
@@ -61,4 +62,10 @@ class UserController(
         val user = userRepository.save(User(signupRequest.username, signupRequest.password, spaces = mutableListOf(personalSpace)))
         return ResponseEntity.ok(user.toDto())
     }
+    
+    @GetMapping("/all")
+    fun getUsers() : ResponseEntity<Collection<UserDto>> {
+        return ResponseEntity.ok(userRepository.findAll().map { it.toDto() })
+    }
+    
 }
