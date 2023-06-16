@@ -8,6 +8,7 @@ import org.dnj.memoria.model.SignupRequest
 import org.dnj.memoria.model.Space
 import org.dnj.memoria.model.User
 import org.dnj.memoria.service.AuthService
+import org.dnj.memoria.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -30,7 +31,7 @@ data class ChangePasswordRequest(
 class UserController(
     private val userRepository: UserRepository,
     private val authService: AuthService,
-    private val spaceRepository: SpaceRepository
+    private val userService: UserService
 ) {
     
     @PostMapping("/change-password")
@@ -39,28 +40,14 @@ class UserController(
         @RequestBody request: ChangePasswordRequest
     ): ResponseEntity<UserDto> {
         val user = authService.validateToken(token)
-        if (user.name != request.username ||
-            user.password != request.currentPassword) {
-            return ResponseEntity.badRequest().build()
-        }
-
-        user.password = request.newPassword
-        return ResponseEntity.ok(userRepository.save(user).toDto())
+        return ResponseEntity.ok(userService.changePassword(user, request))
     }
     
     @PostMapping("/signup")
     fun signup(
         @RequestBody signupRequest: SignupRequest
     ): ResponseEntity<UserDto> {
-        if (signupRequest.promo != System.getenv("MEMORIA_PROMO"))
-            throw MemoriaException("Don't have a promo-code? - Reach the creators", HttpStatus.BAD_REQUEST)
-
-        if (userRepository.findByName(signupRequest.username).isNotEmpty())
-            throw MemoriaException("User already exists", HttpStatus.BAD_REQUEST)
-
-        val personalSpace = spaceRepository.save(Space("${signupRequest.username}'s personal space"))
-        val user = userRepository.save(User(signupRequest.username, signupRequest.password, spaces = mutableListOf(personalSpace)))
-        return ResponseEntity.ok(user.toDto())
+        return ResponseEntity.ok(userService.signup(signupRequest))
     }
     
     @GetMapping("/all")
