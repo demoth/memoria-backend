@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.Date
-import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 @RestController
@@ -36,7 +36,29 @@ class SpaceController(
     fun allSpaces(
         @RequestHeader("Authentication") token: String
     ): Collection<SpaceDto> {
+        authService.validateToken(token)
         return spaceRepository.findAll().map { it.toDto() }
+    }
+    
+    @OptIn(ExperimentalStdlibApi::class)
+    @GetMapping("/{spaceId}")
+    fun getSpace(
+        @RequestHeader("Authentication") token: String,
+        @PathVariable("spaceId") spaceId: String
+    ): SpaceDto {
+        val user = authService.validateToken(token)
+
+        val space = spaceRepository.findById(spaceId).getOrNull()
+            ?: throw MemoriaException("Space $spaceId not found", HttpStatus.NOT_FOUND)
+
+        if (!user.spaces.contains(space))
+            throw MemoriaException("You are not in this space", HttpStatus.FORBIDDEN)
+        
+        // get all users that are in this space
+        // fixme: ugly terrible disaster
+        val participants = userRepository.findAll().filter { it.spaces.contains(space) }.map { it.toDto() }
+        return SpaceDto(space.id, space.name, space.description, participants, space.owner?.toDto())
+
     }
 
     @PostMapping
@@ -49,6 +71,7 @@ class SpaceController(
             val space = spaceRepository.save(Space(request.name, request.description, Date(), null, user))
             user.spaces.add(space)
             userRepository.save(user)
+            logger.info("Created space $space")
             return ResponseEntity.ok(space.toDto())
         }
         logger.warn("Wrong request to 'createSpace': $request")
@@ -68,14 +91,19 @@ class SpaceController(
         val space = spaceRepository.findById(spaceId).getOrNull()
             ?: throw MemoriaException("Space $spaceId not found", HttpStatus.NOT_FOUND)
 
-        if (owner.id != space.owner?.id)
-            throw MemoriaException("You are not an owner of this space", HttpStatus.FORBIDDEN)
+//        if (owner.id != space.owner?.id)
+//            throw MemoriaException("You are not an owner of this space", HttpStatus.FORBIDDEN)
+
+        // anyone already in the space can invite
+        if (!owner.spaces.contains(space))
+            throw MemoriaException("You are not in this space", HttpStatus.FORBIDDEN)
 
         val invitee = userRepository.findById(inviteeId).getOrNull() 
             ?: throw MemoriaException("User $inviteeId not found", HttpStatus.NOT_FOUND)
         
         invitee.spaces.add(space)
         userRepository.save(invitee)
+        logger.info("User ${invitee.toDto()} joined space $space")
         return ResponseEntity.ok("Ok")
     }
 }

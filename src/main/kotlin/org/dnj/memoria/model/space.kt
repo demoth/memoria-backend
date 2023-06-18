@@ -20,5 +20,7 @@ data class Space(
 data class SpaceDto(
     val id: String?,
     val name: String,
-    val description: String?
+    val description: String?,
+    val participants: Collection<UserDto>? = null,
+    val owner: UserDto? = null
 )

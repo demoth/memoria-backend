@@ -8,6 +8,7 @@ import org.dnj.memoria.model.SignupRequest
 import org.dnj.memoria.model.Space
 import org.dnj.memoria.model.User
 import org.dnj.memoria.model.UserDto
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
@@ -16,6 +17,9 @@ class UserService(
     private val userRepository: UserRepository,
     private val spaceRepository: SpaceRepository
 ) {
+
+    private val logger = LoggerFactory.getLogger(UserService::class.java)!!
+
     fun changePassword(user: User, request: ChangePasswordRequest): UserDto {
         if (user.name != request.username ||
             user.password != request.currentPassword) {
@@ -23,7 +27,7 @@ class UserService(
         }
 
         user.password = request.newPassword
-        
+        logger.info("User ${user.toDto()} changed password")
         return userRepository.save(user).toDto()
     }
     
@@ -40,6 +44,7 @@ class UserService(
             signupRequest.password,
             spaces = mutableListOf(personalSpace)
         )
+        logger.info("Create new user ${newUser.toDto()}")
         return userRepository.save(newUser).toDto()
     }
 }
