@@ -22,7 +22,7 @@ class UserController(
     private val authService: AuthService,
     private val userService: UserService
 ) {
-    
+
     @PostMapping("/change-password")
     fun changePassword(
         @RequestHeader("Authentication") token: String,
@@ -31,16 +31,19 @@ class UserController(
         val user = authService.validateToken(token)
         return ResponseEntity.ok(userService.changePassword(user, request))
     }
-    
+
     @PostMapping("/signup")
     fun signup(
         @RequestBody signupRequest: SignupRequest
     ): ResponseEntity<UserDto> {
         return ResponseEntity.ok(userService.signup(signupRequest))
     }
-    
+
     @GetMapping("/all")
-    fun getUsers() : ResponseEntity<Collection<UserDto>> {
+    fun getUsers(
+        @RequestHeader("Authentication") token: String,
+    ): ResponseEntity<Collection<UserDto>> {
+        authService.validateToken(token)
         return ResponseEntity.ok(userRepository.findAll().map { it.toDto() })
     }
     
