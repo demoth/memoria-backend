@@ -20,7 +20,7 @@ data class Space(
 
     var ownerRef: UserDto? = null
 ) {
-    fun toDto() = SpaceDto(id, name, description)
+    fun toDto() = SpaceDto(id, name, description, emptySet(), ownerRef)
 
     fun toRef() = SpaceRef(id ?: "N/A", name)
 }

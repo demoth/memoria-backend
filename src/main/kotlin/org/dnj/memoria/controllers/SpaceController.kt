@@ -5,6 +5,7 @@ import org.dnj.memoria.SpaceRepository
 import org.dnj.memoria.UserRepository
 import org.dnj.memoria.model.Space
 import org.dnj.memoria.model.SpaceDto
+import org.dnj.memoria.model.SpaceRef
 import org.dnj.memoria.service.AuthService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -37,6 +38,7 @@ class SpaceController(
         @RequestHeader("Authentication") token: String
     ): Collection<SpaceDto> {
         authService.validateToken(token)
+        // no participants information
         return spaceRepository.findAll().map { it.toDto() }
     }
     
@@ -50,12 +52,17 @@ class SpaceController(
         val space = spaceRepository.findById(spaceId).getOrNull()
             ?: throw MemoriaException("Space $spaceId not found", HttpStatus.NOT_FOUND)
 
-        if (user.spaceRefs.none { it.id == space.id })
+        if (user.spaceRefs.none { it.id == spaceId })
             throw MemoriaException("You are not in this space", HttpStatus.FORBIDDEN)
         
         // get all users that are in this space
         // fixme: ugly terrible disaster: find all then filter by space ids
-        val participants = userRepository.findAll().filter { u -> u.spaceRefs.any { s -> s.id == space.id } }.map { it.toDto() }
+        val participants = userRepository.findAll()
+            .filter { u ->
+                u.spaceRefs.any {
+                    s -> s.id == spaceId
+                }
+            }.map { it.toDto() }
         return SpaceDto(space.id, space.name, space.description, participants, space.ownerRef)
 
     }
@@ -64,14 +71,14 @@ class SpaceController(
     fun createSpace(
         @RequestHeader("Authentication") token: String,
         @RequestBody request: SpaceDto
-    ): ResponseEntity<SpaceDto> {
+    ): ResponseEntity<SpaceRef> {
         val user = authService.validateToken(token)
         if (request.id == null || spaceRepository.findById(request.id).isEmpty) {
             val space = spaceRepository.save(Space(request.name, request.description, Date(), null, user))
             user.spaceRefs.add(space.toRef())
             userRepository.save(user)
-            logger.info("Created space $space")
-            return ResponseEntity.ok(space.toDto())
+            logger.info("Created space ${space.toRef()}")
+            return ResponseEntity.ok(space.toRef())
         }
         logger.warn("Wrong request to 'createSpace': $request")
         return ResponseEntity.badRequest().build()
