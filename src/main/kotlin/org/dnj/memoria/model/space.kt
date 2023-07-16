@@ -25,7 +25,7 @@ data class Space(
     fun toRef() = SpaceRef(id ?: "N/A", name)
 }
 
-data class SpaceRef(val id: String, val name: String)
+data class SpaceRef(val id: String, val name: String?)
 
 data class SpaceDto(
     val id: String?,
