@@ -10,9 +10,7 @@ interface UserRepository : CrudRepository<User, String> {
 }
 
 interface ItemRepository : CrudRepository<Item, String> {
-    fun findBySpace(space: Space): Collection<Item>
-    
-    fun findBySpaceId(id: String): Collection<Item>
+    fun findBySpaceRef_Id(spaceId: String): Collection<Item>
 }
 
 interface SpaceRepository: CrudRepository<Space, String>

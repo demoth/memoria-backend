@@ -14,6 +14,6 @@ class MemoriaExceptionHandler {
         if (e.httpStatus.is5xxServerError)
             logger.error("Request exception:", e)
         
-        return ResponseEntity(ErrorResponse(e.message), e.httpStatus)
+        return ResponseEntity(ErrorResponse(e.message!!), e.httpStatus)
     }
 }

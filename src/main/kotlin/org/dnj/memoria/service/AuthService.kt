@@ -59,7 +59,7 @@ class AuthService(@Autowired private val userRepository: UserRepository) {
                     .withIssuer(ISSUER)
                     .withClaim(CLAIM_NAME, user.name)
                     .sign(Algorithm.HMAC256(JWT_SECRET)), 
-                user.spaces.map { it.toDto() })
+                user.spaceRefs)
         } catch (e: Exception) {
             throw MemoriaException("Could not authenticate", HttpStatus.INTERNAL_SERVER_ERROR)
         }

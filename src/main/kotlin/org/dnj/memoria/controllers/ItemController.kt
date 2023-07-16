@@ -1,7 +1,7 @@
 package org.dnj.memoria.controllers
 
+import org.dnj.memoria.model.ErrorResponse
 import org.dnj.memoria.model.ItemDto
-import org.dnj.memoria.ValidationException
 import org.dnj.memoria.service.AuthService
 import org.dnj.memoria.service.ItemService
 import org.springframework.http.ResponseEntity
@@ -52,20 +52,16 @@ class ItemController(
     fun updateItem(
         @RequestBody requestItem: ItemDto,
         @RequestHeader("Authentication") token: String
-    ): ResponseEntity<*> {
+    ): ResponseEntity<ItemDto> {
         
         val user = authService.validateToken(token)
 
-        return try {
-            val result = itemService.updateItem(requestItem, user)
+        val result = itemService.updateItem(requestItem, user)
 
-            if (result != null)
-                ResponseEntity.ok(result)
-            else
-                ResponseEntity.notFound().build()
-        } catch (e: ValidationException) {
-            ResponseEntity.badRequest().body(e.message)
-        }
+        return if (result != null)
+            ResponseEntity.ok(result)
+        else
+            ResponseEntity.notFound().build()
     }
 
     @DeleteMapping("/{id}")
