@@ -7,18 +7,10 @@ import org.springframework.data.repository.CrudRepository
 
 interface UserRepository : CrudRepository<User, String> {
     fun findByName(name: String): Collection<User>
-
-    fun findByVersion(version: String): Collection<User>
 }
 
 interface ItemRepository : CrudRepository<Item, String> {
-    fun findBySpace(space: Space): Collection<Item>
-    
     fun findBySpaceId(id: String): Collection<Item>
-
-    fun findByVersion(version: String): Collection<Item>
 }
 
-interface SpaceRepository: CrudRepository<Space, String> {
-    fun findByVersion(version: String): Collection<Space>
-}
+interface SpaceRepository: CrudRepository<Space, String>
