@@ -36,7 +36,6 @@ class ItemService(
 //        return user.spaceRefs.flatMap { itemRepository.findBySpace(it) }.map { it.toDto() }
 //    }
     
-    @OptIn(ExperimentalStdlibApi::class)
     fun getItem(id: String): ItemDto? {
         // todo: check access
         return itemRepository.findById(id).getOrNull()?.toDto()
@@ -53,7 +52,6 @@ class ItemService(
 
     }
     
-    @OptIn(ExperimentalStdlibApi::class)
     fun updateItem(requestItem: ItemDto, user: User): ItemDto? {
         validateItem(requestItem)
         
@@ -72,7 +70,6 @@ class ItemService(
 
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     private fun updateItemFromDto(existingItem: Item, requestItem: ItemDto, creator: User): Item {
         existingItem.updated = Date()
 

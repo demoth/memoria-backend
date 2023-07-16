@@ -40,7 +40,6 @@ class SpaceController(
         return spaceRepository.findAll().map { it.toDto() }
     }
     
-    @OptIn(ExperimentalStdlibApi::class)
     @GetMapping("/{spaceId}")
     fun getSpace(
         @RequestHeader("Authentication") token: String,
@@ -78,7 +77,6 @@ class SpaceController(
         return ResponseEntity.badRequest().build()
     }
     
-    @OptIn(ExperimentalStdlibApi::class)
     @PostMapping("/invite")
     fun joinSpace(
         @RequestHeader("Authentication") token: String,
@@ -86,17 +84,14 @@ class SpaceController(
         @RequestParam("inviteeId") inviteeId: String,
     ): ResponseEntity<String> {
         
-        val owner = authService.validateToken(token)
+        val inviter = authService.validateToken(token)
         
         val space = spaceRepository.findById(spaceId).getOrNull()
             ?: throw MemoriaException("Space $spaceId not found", HttpStatus.NOT_FOUND)
 
-//        if (owner.id != space.owner?.id)
-//            throw MemoriaException("You are not an owner of this space", HttpStatus.FORBIDDEN)
-
         // anyone already in the space can invite
-        if (owner.spaceRefs.none { s -> s.id == space.id })
-            throw MemoriaException("You are not in this space", HttpStatus.FORBIDDEN)
+        if (inviter.spaceRefs.none { s -> s.id == space.id })
+            throw MemoriaException("You are not in this space, can not invite", HttpStatus.FORBIDDEN)
 
         val invitee = userRepository.findById(inviteeId).getOrNull() 
             ?: throw MemoriaException("User $inviteeId not found", HttpStatus.NOT_FOUND)
