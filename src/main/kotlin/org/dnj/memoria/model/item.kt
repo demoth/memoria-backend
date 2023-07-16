@@ -44,7 +44,7 @@ data class Item(
     ) {
     
     companion object {
-        fun empty(creator: User) = Item("", "", Status.Todo, Priority.Low).apply { this.creatorRef = creator.toDto() }
+        fun empty(creator: User) = Item(TYPE_TASK, "Untitled", Status.Todo, Priority.Low).apply { this.creatorRef = creator.toDto() }
 
         const val TYPE_EPIC = "Epic"
         const val TYPE_TASK = "Task"

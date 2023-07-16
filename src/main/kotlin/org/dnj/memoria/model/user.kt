@@ -14,7 +14,7 @@ data class User(
 
     @Deprecated("starting from version 2: use spaceRefs instead")
     @field:DBRef
-    var spaces:MutableList<Space>? = mutableListOf(),
+    var spaces:MutableList<Space>? = null,
 
     var version: String? = "1",
     var spaceRefs: MutableSet<SpaceRef> = mutableSetOf()
