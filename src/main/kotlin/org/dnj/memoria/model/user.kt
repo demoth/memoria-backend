@@ -12,13 +12,14 @@ data class User(
     var password: String?, // todo: don't store password in plain text // todo2: make non nullable 
     @field:Id val id: String? = null,
 
+    @Deprecated("starting from version 2: use spaceRefs instead")
     @field:DBRef
-    val spaces:MutableList<Space> = mutableListOf()
+    var spaces:MutableList<Space>? = mutableListOf(),
+
+    var version: String? = "1",
+    var spaceRefs: MutableSet<SpaceRef> = mutableSetOf()
 ) {
     fun toDto() = UserDto(name, id ?: "N/A")
 }
 
-data class UserDto(
-    val name: String,
-    val id: String
-)
+data class UserDto(val name: String, val id: String)

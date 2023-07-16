@@ -26,15 +26,15 @@ class ItemService(
     }
     
     fun getBySpace(user: User, spaceId: String): List<ItemDto> {
-        if (user.spaces.none { it.id == spaceId}) {
+        if (user.spaceRefs.none { it.id == spaceId}) {
             throw MemoriaException("${user.name} had no access to space: $spaceId", HttpStatus.FORBIDDEN)
         }
         return itemRepository.findBySpaceId(spaceId).map { it.toDto() }
     }
 
-    fun getAllByUserSpace(user: User): List<ItemDto> {
-        return user.spaces.flatMap { itemRepository.findBySpace(it) }.map { it.toDto() }
-    }
+//    fun getAllByUserSpace(user: User): List<ItemDto> {
+//        return user.spaceRefs.flatMap { itemRepository.findBySpace(it) }.map { it.toDto() }
+//    }
     
     @OptIn(ExperimentalStdlibApi::class)
     fun getItem(id: String): ItemDto? {
@@ -102,7 +102,7 @@ class ItemService(
                 } else if (existingItem.type != Item.TYPE_TASK) {
                     throw ValidationException("Only tasks can have a parent")
                 } else {
-                    existingItem.parent = parent
+                    existingItem.parentRef = parent.toRef()
                 }
             } else {
                 throw ValidationException("Parent task ${requestItem.parent.id} does not exist")
@@ -112,7 +112,7 @@ class ItemService(
         if (requestItem.assignee != null) {
             val assignee = userRepository.findById(requestItem.assignee.id).getOrNull()
             if (assignee != null ) {
-                existingItem.assignee = assignee
+                existingItem.assigneeRef = assignee.toDto()
             } else {
                 throw ValidationException("User ${requestItem.assignee.id} does not exist")
             }
@@ -122,9 +122,10 @@ class ItemService(
             val space = spaceRepository.findById(requestItem.space.id).getOrNull() 
                 ?: throw ValidationException("No such space: ${requestItem.space}")
             
-            if (!creator.spaces.contains(space))
+            if (creator.spaceRefs.none {it.id == space.id})
                 throw ValidationException("User is not in the space: $space")
-            existingItem.space = space
+
+            existingItem.spaceRef = space.toRef()
         }
 
         return itemRepository.save(existingItem)

@@ -42,7 +42,7 @@ class UserService(
         val newUser = User(
             signupRequest.username,
             signupRequest.password,
-            spaces = mutableListOf(personalSpace)
+            spaceRefs = mutableSetOf(personalSpace.toRef())
         )
         logger.info("Create new user ${newUser.toDto()}")
         return userRepository.save(newUser).toDto()

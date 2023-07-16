@@ -12,10 +12,20 @@ data class Space(
     var description: String? = null,
     val created: Date = Date(),
     @field:Id val id: String? = null,
-    @field:DBRef val owner: User? = null
+
+    @Deprecated("starting from version2: user owner ref")
+    @field:DBRef var owner: User? = null,
+
+    var version: String? = "1",
+
+    var ownerRef: UserDto? = null
 ) {
     fun toDto() = SpaceDto(id, name, description)
+
+    fun toRef() = SpaceRef(id ?: "N/A", name)
 }
+
+data class SpaceRef(val id: String, val name: String)
 
 data class SpaceDto(
     val id: String?,

@@ -51,13 +51,13 @@ class SpaceController(
         val space = spaceRepository.findById(spaceId).getOrNull()
             ?: throw MemoriaException("Space $spaceId not found", HttpStatus.NOT_FOUND)
 
-        if (!user.spaces.contains(space))
+        if (user.spaceRefs.none { it.id == space.id })
             throw MemoriaException("You are not in this space", HttpStatus.FORBIDDEN)
         
         // get all users that are in this space
-        // fixme: ugly terrible disaster
-        val participants = userRepository.findAll().filter { it.spaces.contains(space) }.map { it.toDto() }
-        return SpaceDto(space.id, space.name, space.description, participants, space.owner?.toDto())
+        // fixme: ugly terrible disaster: find all then filter by space ids
+        val participants = userRepository.findAll().filter { u -> u.spaceRefs.any { s -> s.id == space.id } }.map { it.toDto() }
+        return SpaceDto(space.id, space.name, space.description, participants, space.ownerRef)
 
     }
 
@@ -69,7 +69,7 @@ class SpaceController(
         val user = authService.validateToken(token)
         if (request.id == null || spaceRepository.findById(request.id).isEmpty) {
             val space = spaceRepository.save(Space(request.name, request.description, Date(), null, user))
-            user.spaces.add(space)
+            user.spaceRefs.add(space.toRef())
             userRepository.save(user)
             logger.info("Created space $space")
             return ResponseEntity.ok(space.toDto())
@@ -95,13 +95,13 @@ class SpaceController(
 //            throw MemoriaException("You are not an owner of this space", HttpStatus.FORBIDDEN)
 
         // anyone already in the space can invite
-        if (!owner.spaces.contains(space))
+        if (owner.spaceRefs.none { s -> s.id == space.id })
             throw MemoriaException("You are not in this space", HttpStatus.FORBIDDEN)
 
         val invitee = userRepository.findById(inviteeId).getOrNull() 
             ?: throw MemoriaException("User $inviteeId not found", HttpStatus.NOT_FOUND)
         
-        invitee.spaces.add(space)
+        invitee.spaceRefs.add(space.toRef())
         userRepository.save(invitee)
         logger.info("User ${invitee.toDto()} joined space $space")
         return ResponseEntity.ok("Ok")
