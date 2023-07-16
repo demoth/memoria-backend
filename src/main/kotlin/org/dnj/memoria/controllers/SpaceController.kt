@@ -98,7 +98,7 @@ class SpaceController(
         
         invitee.spaceRefs.add(space.toRef())
         userRepository.save(invitee)
-        logger.info("User ${invitee.toDto()} joined space $space")
+        logger.info("User ${invitee.toDto()} joined space ${space.toRef()}")
         return ResponseEntity.ok("Ok")
     }
 }

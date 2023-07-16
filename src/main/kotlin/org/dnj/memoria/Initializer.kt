@@ -48,7 +48,7 @@ class Initializer(
     // migrate owner to owner ref
     private fun migrate1_2() {
         // space
-        spaceRepository.findByVersion("1").forEach { space ->
+        spaceRepository.findAll().filter { it.version != "111" }.forEach { space ->
             space.owner?.let { owner ->
                 space.ownerRef = owner.toDto()
                 space.owner = null
@@ -59,7 +59,7 @@ class Initializer(
         }
 
         // users
-        userRepository.findByVersion("1").forEach { user ->
+        userRepository.findAll().filter { it.version != "111" }.forEach { user ->
             user.spaces?.let { spaces ->
                 user.spaceRefs = spaces.map { it.toRef() }.toMutableSet()
                 user.spaces = null
@@ -69,7 +69,7 @@ class Initializer(
         }
 
         // items
-        itemRepository.findByVersion("1").forEach { item ->
+        itemRepository.findAll().filter { it.version != "111" }.forEach { item ->
 
             item.assignee?.let {
                 item.assigneeRef = it.toDto()
@@ -83,6 +83,11 @@ class Initializer(
             item.parent?.let {
                 item.parentRef = it.toRef()
                 item.parent = null
+            }
+
+            item.space?.let {
+                item.spaceRef = it.toRef()
+                item.space = null
             }
 
             item.version = "2"
