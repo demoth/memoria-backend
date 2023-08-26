@@ -5,17 +5,19 @@ import org.dnj.memoria.model.Item
 import org.dnj.memoria.model.ItemDto
 import org.dnj.memoria.model.User
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import java.lang.StringBuilder
 import java.util.Date
 import kotlin.jvm.optionals.getOrNull
 
 @Service
+@OptIn(kotlin.ExperimentalStdlibApi::class)
 class ItemService(
-    @Autowired val itemRepository: ItemRepository,
-    @Autowired val userRepository: UserRepository,
-    @Autowired val spaceRepository: SpaceRepository
+    val itemRepository: ItemRepository,
+    val userRepository: UserRepository,
+    val spaceRepository: SpaceRepository,
+    val memoriaTgBot: MessageSender
 ) {
     companion object {
         private val logger = LoggerFactory.getLogger(ItemService::class.java)
@@ -68,24 +70,37 @@ class ItemService(
 
     private fun updateItemFromDto(existingItem: Item, requestItem: ItemDto, creator: User): Item {
         existingItem.updated = Date()
+        val message = StringBuilder()
 
-        if (requestItem.title != null)
+        if (requestItem.title != null && requestItem.title != existingItem.title) {
+            message.append("\n title: ").append(existingItem.title).append("->").append(requestItem.title)
             existingItem.title = requestItem.title
+        }
 
-        if (requestItem.priority != null)
+        if (requestItem.priority != null && requestItem.priority != existingItem.priority) {
+            message.append("\n priority: ").append(existingItem.priority).append("->").append(requestItem.priority)
             existingItem.priority = requestItem.priority
+        }
 
-        if (requestItem.description != null)
+        if (requestItem.description != null && requestItem.description != existingItem.description) {
+            message.append("\n description: ").append(existingItem.description).append("->").append(requestItem.description)
             existingItem.description = requestItem.description
+        }
 
-        if (requestItem.status != null)
+        if (requestItem.status != null && requestItem.status != existingItem.status) {
+            message.append("\n status: ").append(existingItem.status).append("->").append(requestItem.status)
             existingItem.status = requestItem.status
+        }
 
-        if (requestItem.type != null)
+        if (requestItem.type != null && requestItem.type != existingItem.type) {
+            message.append("\n type: ").append(existingItem.type).append("->").append(requestItem.type)
             existingItem.type = requestItem.type
+        }
 
-        if (requestItem.dueDate != null)
+        if (requestItem.dueDate != null && requestItem.dueDate != existingItem.dueDate) {
+            message.append("\n dueDate: ").append(existingItem.dueDate).append("->").append(requestItem.dueDate)
             existingItem.dueDate = requestItem.dueDate
+        }
 
         if (requestItem.parent != null) {
             val parent = itemRepository.findById(requestItem.parent.id).getOrNull()
@@ -94,7 +109,8 @@ class ItemService(
                     throw ValidationException("Parent can only be epic: $parent")
                 } else if (existingItem.type != Item.TYPE_TASK) {
                     throw ValidationException("Only tasks can have a parent")
-                } else {
+                } else if (parent.toRef() != existingItem.parentRef) {
+                    message.append("\n parent: ").append(existingItem.parentRef?.title).append("->").append(parent.toRef().title)
                     existingItem.parentRef = parent.toRef()
                 }
             } else {
@@ -104,7 +120,8 @@ class ItemService(
 
         if (requestItem.assignee != null) {
             val assignee = userRepository.findById(requestItem.assignee.id).getOrNull()
-            if (assignee != null ) {
+            if (assignee != null && assignee.toDto() != existingItem.assigneeRef) {
+                message.append("\n assignee: ").append(existingItem.assigneeRef?.name).append("->").append(assignee.toDto().name)
                 existingItem.assigneeRef = assignee.toDto()
             } else {
                 throw ValidationException("User ${requestItem.assignee.id} does not exist")
@@ -118,9 +135,14 @@ class ItemService(
             if (creator.spaceRefs.none { it.id == space.id })
                 throw ValidationException("User is not in the space: $space")
 
-            existingItem.spaceRef = space.toRef()
+            if (existingItem.spaceRef != space.toRef()) {
+                message.append("\n space: ").append(existingItem.spaceRef?.name).append("->").append(space.toRef().name)
+                existingItem.spaceRef = space.toRef()
+            }
         }
-
+        if (message.isNotEmpty()) {
+            memoriaTgBot.sendUpdate("${existingItem.title} updated: " + message.toString())
+        }
         return itemRepository.save(existingItem)
     }
 

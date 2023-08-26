@@ -41,7 +41,8 @@ class SpaceController(
         // no participants information
         return spaceRepository.findAll().map { it.toDto() }
     }
-    
+
+    @OptIn(kotlin.ExperimentalStdlibApi::class)
     @GetMapping("/{spaceId}")
     fun getSpace(
         @RequestHeader("Authentication") token: String,
@@ -83,7 +84,8 @@ class SpaceController(
         logger.warn("Wrong request to 'createSpace': $request")
         return ResponseEntity.badRequest().build()
     }
-    
+
+    @OptIn(kotlin.ExperimentalStdlibApi::class)
     @PostMapping("/invite")
     fun joinSpace(
         @RequestHeader("Authentication") token: String,
