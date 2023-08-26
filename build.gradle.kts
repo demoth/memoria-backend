@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "org.dnj"
-version = "1.5.2"
+version = "1.5.3"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
@@ -19,6 +19,8 @@ repositories {
 }
 
 dependencies {
+	implementation("com.github.pengrad:java-telegram-bot-api:6.7.0")
+
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
