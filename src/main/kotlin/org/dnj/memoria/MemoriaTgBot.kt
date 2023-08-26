@@ -26,7 +26,11 @@ class MemoriaTgBot: MessageSender {
     }
 
     override fun sendUpdate(message: String) {
-        bot.execute(SendMessage(allowedChatId, message))
+        try {
+            bot.execute(SendMessage(allowedChatId, message))
+        } catch (e: Exception) {
+            logger.error("Exception during sendUpdate:", e)
+        }
     }
 
     private fun processUpdates(updates: MutableList<Update>): Int {
